@@ -19,12 +19,13 @@ class FlappyBirdEnv(gym.Env):
         # 2: x distance to next pipe
         # 3: height of next pipe
 
+        # Ranges used for normalization
         self.BIRD_Y_RANGE = [0, self.game.SCREEN_HEIGHT]
         self.BIRD_V_RANGE = [-10, 10]
         self.PIPE_X_RANGE = [0, self.game.SCREEN_WIDTH]
         self.PIPE_Y_RANGE = [0, self.game.SCREEN_HEIGHT]
         
-        self.action_space = spaces.Discrete(2)
+        self.action_space = spaces.Discrete(2) # Number of actions the agent can take
         
         # Expects normalized inputs!
         self.observation_space = spaces.Box(low=0, high=1,
@@ -49,27 +50,32 @@ class FlappyBirdEnv(gym.Env):
 
     def step(self, action):
 
-        print(action)
+        print(action) # DEBUG
+
+        # Send action to game:
         if action == 1:
             self.game.click()
 
+        # Update game state:
         self.game.update()
 
         observation = self.create_observation()
         reward = self.calculate_reward()
         terminated = self.game.is_game_over()
 
+        self.render() # Render the game
+
         self.last_action = action
         return observation, reward, terminated, False, {}
 
     def reset(self, seed=None, options=None):
+        ''' Reset the game state when the agent dies '''
         self.game.reset()
         observation = self.create_observation()
         return observation, {}
 
     def render(self):
-        pass
-        # self.game.render()
+        self.game.render()
 
     def close(self):
         pass
