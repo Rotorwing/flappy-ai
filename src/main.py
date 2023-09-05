@@ -1,5 +1,5 @@
-import stablebaselines3
-from stablebaselines3 import PPO
+import stable_baselines3
+from stable_baselines3 import PPO
 import os
 from env import FlappyBirdEnv
 

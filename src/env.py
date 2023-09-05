@@ -1,58 +1,65 @@
 import gymnasium as gym
 import numpy as np
 from gymnasium import spaces
+from game import FlappyBird
 
 class FlappyBirdEnv(gym.Env):
 
+    # I don't think this actually does anything:
     metadata = {"render_modes": ["human"], "render_fps": 30}
-
 
     def __init__(self):
         super().__init__()
 
-        game = FlappyBird()
+        self.game = FlappyBird()
         
-        N_INPUTS = 4
+        self.N_INPUTS = 4
         # 0: bird y position
         # 1: bird y velocity
         # 2: x distance to next pipe
         # 3: height of next pipe
 
-        BIRD_Y_RANGE = [0, 800]
-        BIRD_V_RANGE = [-10, 10]
-        PIPE_X_RANGE = [0, 800]
-        PIPE_Y_RANGE = [0, 800]
+        self.BIRD_Y_RANGE = [0, self.game.SCREEN_HEIGHT]
+        self.BIRD_V_RANGE = [-10, 10]
+        self.PIPE_X_RANGE = [0, self.game.SCREEN_WIDTH]
+        self.PIPE_Y_RANGE = [0, self.game.SCREEN_HEIGHT]
         
         self.action_space = spaces.Discrete(2)
         
         # Expects normalized inputs!
         self.observation_space = spaces.Box(low=0, high=1,
-                                            shape=(N_INPUTS), dtype=np.float32)
+                                            shape=(self.N_INPUTS,), dtype=np.float32)
+        
+        self.last_action = None
     
     def normalize(self, x, range):
         return (x - range[0]) / (range[1] - range[0])
     
     def create_observation(self):
+        pipe_position = self.game.get_closest_pipe_position()
         return np.array([
-            self.normalize(self.game.bird_position_y, self.BIRD_Y_RANGE),
-            self.normalize(self.game.bird_velocity, self.BIRD_V_RANGE),
-            self.normalize(self.game.pipe_position_x[0], self.PIPE_X_RANGE),
-            self.normalize(self.game.pipe_position_y[0], self.PIPE_Y_RANGE)
+            self.normalize(self.game.get_bird_y_position(), self.BIRD_Y_RANGE),
+            self.normalize(self.game.get_bird_speed(), self.BIRD_V_RANGE),
+            self.normalize(pipe_position[0], self.PIPE_X_RANGE),
+            self.normalize(pipe_position[1], self.PIPE_Y_RANGE)
         ])
 
     def calculate_reward(self):
-        return self.game.score
+        return self.game.get_score()
 
     def step(self, action):
 
         print(action)
-        self.game.perform_action(action)
+        if action == 1:
+            self.game.click()
 
         self.game.update()
 
         observation = self.create_observation()
         reward = self.calculate_reward()
-        terminated = self.game.game_over
+        terminated = self.game.is_game_over()
+
+        self.last_action = action
         return observation, reward, terminated, False, {}
 
     def reset(self, seed=None, options=None):
@@ -61,7 +68,9 @@ class FlappyBirdEnv(gym.Env):
         return observation, {}
 
     def render(self):
-        self.game.render()
+        pass
+        # self.game.render()
 
     def close(self):
-        self.game.close()
+        pass
+        # self.game.close()
