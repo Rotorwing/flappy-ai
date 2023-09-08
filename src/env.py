@@ -71,6 +71,7 @@ class FlappyBirdEnv(gym.Env):
     def reset(self, seed=None, options=None):
         ''' Reset the game state when the agent dies '''
         self.game.reset()
+        # self.game = FlappyBird()
         observation = self.create_observation()
         return observation, {}
 

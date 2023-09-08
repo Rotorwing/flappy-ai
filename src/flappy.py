@@ -7,7 +7,7 @@ import os
 os.chdir(os.path.dirname(os.path.realpath(__file__))) 
 
 def flappy_bird():
-    MAX_FRAMERATE = 1500 # note that the normal speed is 15 FPS
+    MAX_FRAMERATE = 15 # note that the normal speed is 15 FPS
 
     #VARIABLES
     SCREEN_WIDHT = 400
@@ -218,11 +218,21 @@ def flappy_bird():
 
         screen.blit(BACKGROUND, (0, 0))
 
-        # Optimized off-screen ground check
         if is_off_screen(ground_group.sprites()[0]):
             ground_group.remove(ground_group.sprites()[0])
+
             new_ground = Ground(GROUND_WIDHT - 20)
             ground_group.add(new_ground)
+
+        if is_off_screen(pipe_group.sprites()[0]):
+            pipe_group.remove(pipe_group.sprites()[0])
+            pipe_group.remove(pipe_group.sprites()[0])
+
+            pipes = get_random_pipes(SCREEN_WIDHT * 2)
+
+            pipe_group.add(pipes[0])
+            pipe_group.add(pipes[1])
+        
 
         # Optimized off-screen pipe check and removal
         to_remove = []
