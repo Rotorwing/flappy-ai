@@ -1,6 +1,7 @@
 import pygame
 import random
 import os
+import numpy as np
 
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
@@ -13,7 +14,7 @@ class FlappyBird:
         self.SCREEN_WIDTH = 400
         self.SCREEN_HEIGHT = 600
         self.SPEED = 20
-        self.GRAVITY = 2.5 - 1.7
+        self.GRAVITY = 2.5
         self.GAME_SPEED = 15
 
         self.GROUND_WIDTH = 2 * self.SCREEN_WIDTH
@@ -23,6 +24,11 @@ class FlappyBird:
         self.PIPE_HEIGHT = 500
 
         self.PIPE_GAP = 150
+
+        self.BIRD_Y_RANGE = [0, self.SCREEN_HEIGHT]
+        self.BIRD_V_RANGE = [-10, 10]
+        self.PIPE_X_RANGE = [0, self.SCREEN_WIDTH]
+        self.PIPE_Y_RANGE = [0, self.SCREEN_HEIGHT]
 
         self.score = 0
 
@@ -41,12 +47,15 @@ class FlappyBird:
         self.bird = Bird(self)
         self.bird_group.add(self.bird)
 
+        self.jumping = False
+
 
         self.clock = pygame.time.Clock()
 
-        # set up font for FPS and other text
+        # set up font for FPS, score and other text
         pygame.font.init()
-        self.font = pygame.font.SysFont(None, 36)
+        self.font = pygame.font.SysFont(None, 24)
+        self.large_font = pygame.font.SysFont(None, 48)
 
         
         
@@ -97,12 +106,25 @@ class FlappyBird:
     def update(self):
         ''' Update the game state (bird position, pipe positions, etc.)'''
         # bird.bump() # This makes the bird jump
+
+        self.jumping = False
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE or event.key == pygame.K_UP:
+                    self.bird.bump()
+                    self.jumping = True
+
+
+
         
         # Optimized collision detection
         for pipe in self.pipe_group:
             if pipe.rect[0] + self.PIPE_WIDTH > 0:  # Only if pipe is on screen
                 if pygame.sprite.collide_mask(self.bird, pipe):
-                    pygame.quit() # This may just close the window or it may quit() the whole program
+                    pygame.quit()
+
 
         self.bird_group.update()
         self.ground_group.update()
@@ -122,6 +144,8 @@ class FlappyBird:
 
             self.pipe_group.add(pipes[0])
             self.pipe_group.add(pipes[1])
+
+            self.score += 1
         
 
         # Optimized off-screen pipe check and removal
@@ -158,7 +182,13 @@ class FlappyBird:
         # FPS Counter
         self.fps = int(self.clock.get_fps())
         self.fps_text = self.font.render("FPS: " + str(self.fps), True, (255, 255, 255))
-        self.screen.blit(self.fps_text, (self.SCREEN_WIDTH - 100, 10))
+        self.screen.blit(self.fps_text, (2, 2))
+
+        # Current score Counter
+        self.current_score = int(self.score)
+        self.current_score_text = self.large_font.render(str(self.current_score), True, (255, 255, 255))
+        self.screen.blit(self.current_score_text, (self.SCREEN_WIDTH - self.SCREEN_WIDTH / 2, 64))
+
 
         pygame.display.update()
 
@@ -175,9 +205,9 @@ class FlappyBird:
         closest_pipe = self.pipe_group.sprites()[0]  # Update this to switch to the next pipe sooner
         return closest_pipe.rect[0], closest_pipe.rect[1]
 
-    def click(self):
+    def jump(self):
         ''' Simulate a click on the screen (unfinished)'''
-        pass
+        self.bird.bump()
 
     def get_score(self):
         ''' Return the current score (finished)'''
@@ -192,6 +222,18 @@ class FlappyBird:
         self.bird.reset()
         self.create_starting_objects()
         self.score = 0
+    
+    def normalize(self, x, range):
+        return (x - range[0]) / (range[1] - range[0])
+    
+    def get_observation(self):
+        pipe_position = self.get_closest_pipe_position()
+        return np.array([
+            self.normalize(self.get_bird_y_position(), self.BIRD_Y_RANGE),
+            self.normalize(self.get_bird_speed(), self.BIRD_V_RANGE),
+            self.normalize(pipe_position[0], self.PIPE_X_RANGE),
+            self.normalize(pipe_position[1], self.PIPE_Y_RANGE)
+        ])
 
 
 class Bird(pygame.sprite.Sprite):
@@ -221,6 +263,11 @@ class Bird(pygame.sprite.Sprite):
         #UPDATE HEIGHT
         self.rect[1] += self.speed
 
+        if (self.rect[1] < 0):
+            self.rect[1] = 0
+            self.speed = 0
+
+
     def bump(self):
         self.speed = -self.game.SPEED
 
@@ -231,6 +278,7 @@ class Bird(pygame.sprite.Sprite):
     def reset(self):
         self.rect[1] = self.game.SCREEN_HEIGHT / 2
         self.speed = -self.game.SPEED
+
 
 
 

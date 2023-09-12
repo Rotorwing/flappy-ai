@@ -4,6 +4,7 @@ import os
 from env import FlappyBirdEnv
 
 
+
 logdir = "logs"
 
 # Create directories for logging and model saving if they don't exist:
@@ -29,10 +30,10 @@ if not os.path.exists(models_dir):
 env = FlappyBirdEnv()
 
 # Start Model from scratch:
-# model = PPO("MlpPolicy", env, verbose=1, tensorboard_log=logdir)
+model = PPO("MlpPolicy", env, verbose=1, tensorboard_log=logdir)
 
 # Continue training from saved model:
-model = PPO.load("models/PPO_000/1000.zip", env=env, verbose=1, tensorboard_log=logdir)
+# model = PPO.load("models/PPO_000/1000.zip", env=env, verbose=1, tensorboard_log=logdir)
 
 TIMESTEPS = 10000
 i = 0

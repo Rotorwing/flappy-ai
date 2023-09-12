@@ -37,24 +37,26 @@ class FlappyBirdEnv(gym.Env):
         return (x - range[0]) / (range[1] - range[0])
     
     def create_observation(self):
-        pipe_position = self.game.get_closest_pipe_position()
-        return np.array([
-            self.normalize(self.game.get_bird_y_position(), self.BIRD_Y_RANGE),
-            self.normalize(self.game.get_bird_speed(), self.BIRD_V_RANGE),
-            self.normalize(pipe_position[0], self.PIPE_X_RANGE),
-            self.normalize(pipe_position[1], self.PIPE_Y_RANGE)
-        ])
+        # pipe_position = self.game.get_closest_pipe_position()
+        # return np.array([
+        #     self.normalize(self.game.get_bird_y_position(), self.BIRD_Y_RANGE),
+        #     self.normalize(self.game.get_bird_speed(), self.BIRD_V_RANGE),
+        #     self.normalize(pipe_position[0], self.PIPE_X_RANGE),
+        #     self.normalize(pipe_position[1], self.PIPE_Y_RANGE)
+        # ])
+        return self.game.get_observation()
 
     def calculate_reward(self):
-        return self.game.get_score()
+
+        return self.game.get_score() + 1 #self.game.frame
 
     def step(self, action):
 
-        print(action) # DEBUG
+        # print(action) # DEBUG
 
         # Send action to game:
         if action == 1:
-            self.game.click()
+            self.game.jump()
 
         # Update game state:
         self.game.update()
