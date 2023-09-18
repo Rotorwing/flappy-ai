@@ -42,3 +42,5 @@ if __name__ == '__main__':
             game.render()
     
     save_transitions(recorded_input_data, path)
+
+print("Recording saved to", path+".p")

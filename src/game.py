@@ -57,6 +57,8 @@ class FlappyBird:
         self.font = pygame.font.SysFont(None, 24)
         self.large_font = pygame.font.SysFont(None, 48)
 
+        self.game_over = False
+
         
         
     def setup(self):
@@ -107,6 +109,11 @@ class FlappyBird:
         ''' Update the game state (bird position, pipe positions, etc.)'''
         # bird.bump() # This makes the bird jump
 
+        if self.game_over:
+            self.reset()
+            self.game_over = False
+            return
+
         self.jumping = False
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -123,7 +130,7 @@ class FlappyBird:
         for pipe in self.pipe_group:
             if pipe.rect[0] + self.PIPE_WIDTH > 0:  # Only if pipe is on screen
                 if pygame.sprite.collide_mask(self.bird, pipe):
-                    pygame.quit()
+                    self.game_over = True
 
 
         self.bird_group.update()
@@ -163,10 +170,10 @@ class FlappyBird:
                 if pygame.sprite.collide_mask(self.bird, pipe):
                     # pygame.mixer.music.load(hit)
                     # pygame.mixer.music.play()
-                    pygame.quit()
+                    self.game_over = True
         
         if pygame.sprite.groupcollide(self.bird_group, self.ground_group, False, False, pygame.sprite.collide_mask):
-            pygame.quit()
+            self.game_over = True
 
     def render(self): # This should be up to date as of our first meeting
         ''' Render the game (unfinished)'''
@@ -215,7 +222,7 @@ class FlappyBird:
 
     def is_game_over(self):
         ''' Return True if the game is over, False otherwise (unfinished)'''
-        return False
+        return self.game_over
     
     def reset(self):
         ''' Reset the game state (finished)'''

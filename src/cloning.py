@@ -32,7 +32,7 @@ def load_transitions(path):
     return trajectory
 
 
-transitions = load_transitions("recordings/recording_003.p")
+transitions = load_transitions("recordings/recording_007.p")
 print(transitions)
 
 bc_trainer = bc.BC(
@@ -41,7 +41,7 @@ bc_trainer = bc.BC(
     demonstrations=transitions,
     rng=rng,
 )
-bc_trainer.train(n_epochs=1)
+bc_trainer.train(n_epochs=100)
 reward, _ = evaluate_policy(bc_trainer.policy, env, 500)
 # policy.save(f"clone_models/clone_model_{000}")
 
