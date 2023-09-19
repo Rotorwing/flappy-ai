@@ -33,7 +33,7 @@ env = FlappyBirdEnv()
 model = PPO("MlpPolicy", env, verbose=1, tensorboard_log=logdir)
 
 # Continue training from saved model:
-# model = PPO.load("models/PPO_000/1000.zip", env=env, verbose=1, tensorboard_log=logdir)
+# model = PPO.load("clone_models/clone_model_007", env=env, verbose=1, tensorboard_log=logdir) #"models/PPO_000/1000.zip"
 
 TIMESTEPS = 10000
 i = 0

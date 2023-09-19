@@ -8,7 +8,7 @@ os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 class FlappyBird:
     def __init__(self) -> None:
-        self.MAX_FRAMERATE = 15 # note that the normal speed is 15 FPS
+        self.MAX_FRAMERATE = 1500 # note that the normal speed is 15 FPS
 
         # VARIABLES
         self.SCREEN_WIDTH = 400
