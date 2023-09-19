@@ -5,9 +5,6 @@ from game import FlappyBird
 
 class FlappyBirdEnv(gym.Env):
 
-    # I don't think this actually does anything:
-    metadata = {"render_modes": ["human"], "render_fps": 30}
-
     def __init__(self):
         super().__init__()
 
@@ -47,7 +44,7 @@ class FlappyBirdEnv(gym.Env):
         return self.game.get_observation()
 
     def calculate_reward(self):
-
+        next_pipe = self.game.get_closest_pipe_position()
         return self.game.get_score() + 1 #self.game.frame
 
     def step(self, action):

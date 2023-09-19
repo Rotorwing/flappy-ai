@@ -30,10 +30,10 @@ if not os.path.exists(models_dir):
 env = FlappyBirdEnv()
 
 # Start Model from scratch:
-model = PPO("MlpPolicy", env, verbose=1, tensorboard_log=logdir)
+# model = PPO("MlpPolicy", env, verbose=1, tensorboard_log=logdir)
 
 # Continue training from saved model:
-# model = PPO.load("clone_models/clone_model_007", env=env, verbose=1, tensorboard_log=logdir) #"models/PPO_000/1000.zip"
+model = PPO.load("models/PPO_009/80000.zip", env=env, verbose=1, tensorboard_log=logdir) #"clone_models/clone_model_007"
 
 TIMESTEPS = 10000
 i = 0
