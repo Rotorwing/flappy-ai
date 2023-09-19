@@ -29,6 +29,8 @@ class FlappyBirdEnv(gym.Env):
                                             shape=(self.N_INPUTS,), dtype=np.float32)
         
         self.last_action = None
+
+        self.enable_render = True
     
     def normalize(self, x, range):
         return (x - range[0]) / (range[1] - range[0])
@@ -62,7 +64,7 @@ class FlappyBirdEnv(gym.Env):
         reward = self.calculate_reward()
         terminated = self.game.is_game_over()
 
-        self.render() # Render the game
+        if self.enable_render: self.render() # Render the game
 
         self.last_action = action
         return observation, reward, terminated, False, {}
@@ -76,6 +78,12 @@ class FlappyBirdEnv(gym.Env):
 
     def render(self):
         self.game.render()
+    
+    def enable_rendering(self):
+        self.enable_render = True
+    
+    def disable_rendering(self):
+        self.enable_render = False
 
     def close(self):
         pass
